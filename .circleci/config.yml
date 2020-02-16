@@ -89,33 +89,33 @@ workflows:
   build-master:
     jobs:
       - build:
+          requires:
+            - test
           filters:
               branches:
                 only: master
       - test:
-          requires:
-            - build
           filters:
             branches:
               only: master
       - publish-latest:
           context: DockerHub
           requires:
-            - test
+            - build
           filters:
             branches:
               only: master
   build-tags:
     jobs:
       - build:
+          requires:
+            - test
           filters:
             tags:
               only: /^v.*/
             branches:
               ignore: /.*/
       - test:
-          requires:
-            - build
           filters:
             tags:
               only: /^v.*/
@@ -124,7 +124,7 @@ workflows:
       - publish-tag:
           context: DockerHub
           requires:
-            - test
+            - build
           filters:
             tags:
               only: /^v.*/
@@ -132,13 +132,7 @@ workflows:
               ignore: /.*/
   build-pulls:
     jobs:
-      - build:
-          filters:
-            branches:
-              only: /^pull.+/
       - test:
-          requires:
-            - build
           filters:
             branches:
               only: /^pull.+/
